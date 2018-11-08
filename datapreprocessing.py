@@ -70,6 +70,7 @@ def find_sub_list(sl,l):
 
 def getContextWindow(cleanedText, cleanedAspect):
     j=0
+    window = 4
     textContextList = []
     for text, aspect in zip(cleanedText,cleanedAspect):
         j=j+1
@@ -90,15 +91,15 @@ def getContextWindow(cleanedText, cleanedAspect):
         else:
             #textContext = []
             startIndex =0
-            if(results[0][0]<3):
+            if(results[0][0]<window):
                 startIndex = 0
             else:
-                startIndex = results[0][0]-3
+                startIndex = results[0][0]-window
             endIndex = 0
-            if(results[0][1]>len(texttokens)-3):
+            if(results[0][1]>len(texttokens)-window):
                 endIndex = len(texttokens)
             else:
-                endIndex = results[0][1]+3
+                endIndex = results[0][1]+window
             for i in range(startIndex,endIndex):
                 textContext.append(texttokens[i])
 

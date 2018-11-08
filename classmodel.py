@@ -25,8 +25,8 @@ cleanedText = dp.cleanStatement(text)
 cleanedAspect = dp.cleanStatement(aspectTerms)
 
 #getting the string in context words i.e 3 words to the left and right of the aspect term string
-textContext = dp.getContextWindow(cleanedText,cleanedAspect)
-
+#textContext = dp.getContextWindow(cleanedText,cleanedAspect)
+textContext = cleanedText
 #print(data.shape)
 #print(data.classes.value_counts())
 
