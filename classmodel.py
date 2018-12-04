@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 from sklearn.svm import LinearSVC
 from sklearn import feature_extraction, model_selection, metrics, naive_bayes
 import pickle
@@ -11,22 +11,56 @@ from sklearn.linear_model import LogisticRegression,SGDClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
+from numpy import *
+
 
 
 ## reading the training data
 colnames = ['example_id', 'text', 'aspect_term', 'term_location', 'classes']
-data = pandas.read_csv('./data-1_train.csv', header=0, names=colnames)
 
-text = data.text.tolist()
-aspectTerms = data.aspect_term.tolist()
+# df = pd.read_csv('data-2_train.csv', )
+data = pd.read_csv('./data-2_train.csv', header=0,index_col=['example_id'])
+data_pos=data.loc[data[' class']==1]
+data_neu=data.loc[data[' class']==0]
+data_neg=data.loc[data[' class']==-1]
+
+from sklearn.utils import resample
+positive=list(data[' class']).count(1)
+neutral=list(data[' class']).count(0)
+negative=list(data[' class']).count(-1)
+print("before resampling")
+print(positive,neutral,negative)
+resampled_zero=resample(data_neu,n_samples=positive-neutral)
+resampled_neg=resample(data_neg,n_samples=positive-negative)
+data=pd.concat([resampled_zero,resampled_neg,data],ignore_index=True,axis=0)
+#print(df)
+
+positive=list(data[' class']).count(1)
+neutral=list(data[' class']).count(0)
+negative=list(data[' class']).count(-1)
+#print("$%$%$%$%$%$%#")
+print("after resampling")
+print(positive,neutral,negative)
+
+from sklearn.utils import shuffle
+data=shuffle(data)
+data=data.set_index(arange(len(data)))
+
+
+#print(df.keys())
+sentences = data[' text']
+
+text = sentences.tolist()
+aspect= data[' aspect_term']
+aspectTerms = aspect.tolist()
 
 ##data preprocessing
 cleanedText = dp.cleanStatement(text)
 cleanedAspect = dp.cleanStatement(aspectTerms)
 
 #getting the string in context words i.e 3 words to the left and right of the aspect term string
-#textContext = dp.getContextWindow(cleanedText,cleanedAspect)
-textContext = cleanedText
+textContext = dp.getContextWindow(cleanedText,cleanedAspect)
+# textContext = cleanedText
 #print(data.shape)
 #print(data.classes.value_counts())
 
@@ -39,7 +73,7 @@ train_dtm
 
 #LinearSVC - [1]
 X = train_dtm
-y = data.classes
+y = data[' class']
 
 classifierLinear=LinearSVC(multi_class='crammer_singer', random_state=0)
 preds = model_selection.cross_val_predict(classifierLinear, X, y, cv=10) #10 fold cross validation perhaps ???
@@ -67,54 +101,7 @@ classifierLinear.fit(X,y)
 pickle.dump(classifierLinear, open('model', 'wb'))
 
 # Naive Bayes Classifier - [2]
-clf = naive_bayes.BernoulliNB()
-preds = model_selection.cross_val_predict(clf, X, y, cv=10)
-accScore = metrics.accuracy_score(y,preds)
-labels = [-1, 0, 1]
-precision = metrics.precision_score(y,preds,average=None,labels=labels)
-recall = metrics.recall_score(y,preds,average=None,labels=labels)
-f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
-print(clf)
-print("\nOverall Acurracy - BernaulliNB: ",accScore,"\n")
-for i in range(len(labels)):
-    print("Precision of %s class: %f" %(labels[i],precision[i]))
-    print("Recall of %s class: %f" %(labels[i],recall[i]))
-    print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
-
-# Multinomial Naive Bayes Classifier - [3]
-clf = naive_bayes.MultinomialNB()
-preds = model_selection.cross_val_predict(clf, X, y, cv=10)
-accScore = metrics.accuracy_score(y,preds)
-labels = [-1, 0, 1]
-precision = metrics.precision_score(y,preds,average=None,labels=labels)
-recall = metrics.recall_score(y,preds,average=None,labels=labels)
-f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
-print(clf)
-print("\nOverall Acurracy - MultinomialNB: ",accScore,"\n")
-for i in range(len(labels)):
-    print("Precision of %s class: %f" %(labels[i],precision[i]))
-    print("Recall of %s class: %f" %(labels[i],recall[i]))
-    print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
-
-# MLP Classifier - [4]
-clf = neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 3), random_state=1)
-preds = model_selection.cross_val_predict(clf, X, y, cv=10)
-accScore = metrics.accuracy_score(y,preds)
-labels = [-1, 0, 1]
-precision = metrics.precision_score(y,preds,average=None,labels=labels)
-recall = metrics.recall_score(y,preds,average=None,labels=labels)
-f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
-print(clf)
-print("\nOverall Acurracy - MLP: ",accScore,"\n")
-for i in range(len(labels)):
-    print("Precision of %s class: %f" %(labels[i],precision[i]))
-    print("Recall of %s class: %f" %(labels[i],recall[i]))
-    print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
-
-
-
-# # SVC Classifier - [5]
-# clf =  SVC(kernel='rbf', gamma=0.58, C=0.81)
+# clf = naive_bayes.BernoulliNB()
 # preds = model_selection.cross_val_predict(clf, X, y, cv=10)
 # accScore = metrics.accuracy_score(y,preds)
 # labels = [-1, 0, 1]
@@ -122,26 +109,73 @@ for i in range(len(labels)):
 # recall = metrics.recall_score(y,preds,average=None,labels=labels)
 # f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
 # print(clf)
-# print("\nOverall Acurracy - SVC: ",accScore,"\n")
+# print("\nOverall Acurracy - BernaulliNB: ",accScore,"\n")
 # for i in range(len(labels)):
 #     print("Precision of %s class: %f" %(labels[i],precision[i]))
 #     print("Recall of %s class: %f" %(labels[i],recall[i]))
 #     print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
 
-# DecisionTreeClassifier - [6]
-clf =  DecisionTreeClassifier(random_state=0)
-preds = model_selection.cross_val_predict(clf, X, y, cv=10)
-accScore = metrics.accuracy_score(y,preds)
-labels = [-1, 0, 1]
-precision = metrics.precision_score(y,preds,average=None,labels=labels)
-recall = metrics.recall_score(y,preds,average=None,labels=labels)
-f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
-print(clf)
-print("\nOverall Acurracy - DecisionTreeClassifier: ",accScore,"\n")
-for i in range(len(labels)):
-    print("Precision of %s class: %f" %(labels[i],precision[i]))
-    print("Recall of %s class: %f" %(labels[i],recall[i]))
-    print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
+# # Multinomial Naive Bayes Classifier - [3]
+# clf = naive_bayes.MultinomialNB()
+# preds = model_selection.cross_val_predict(clf, X, y, cv=10)
+# accScore = metrics.accuracy_score(y,preds)
+# labels = [-1, 0, 1]
+# precision = metrics.precision_score(y,preds,average=None,labels=labels)
+# recall = metrics.recall_score(y,preds,average=None,labels=labels)
+# f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
+# print(clf)
+# print("\nOverall Acurracy - MultinomialNB: ",accScore,"\n")
+# for i in range(len(labels)):
+#     print("Precision of %s class: %f" %(labels[i],precision[i]))
+#     print("Recall of %s class: %f" %(labels[i],recall[i]))
+#     print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
+
+# # MLP Classifier - [4]
+# clf = neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 3), random_state=1)
+# preds = model_selection.cross_val_predict(clf, X, y, cv=10)
+# accScore = metrics.accuracy_score(y,preds)
+# labels = [-1, 0, 1]
+# precision = metrics.precision_score(y,preds,average=None,labels=labels)
+# recall = metrics.recall_score(y,preds,average=None,labels=labels)
+# f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
+# print(clf)
+# print("\nOverall Acurracy - MLP: ",accScore,"\n")
+# for i in range(len(labels)):
+#     print("Precision of %s class: %f" %(labels[i],precision[i]))
+#     print("Recall of %s class: %f" %(labels[i],recall[i]))
+#     print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
+
+
+
+# # # SVC Classifier - [5]
+# # clf =  SVC(kernel='rbf', gamma=0.58, C=0.81)
+# # preds = model_selection.cross_val_predict(clf, X, y, cv=10)
+# # accScore = metrics.accuracy_score(y,preds)
+# # labels = [-1, 0, 1]
+# # precision = metrics.precision_score(y,preds,average=None,labels=labels)
+# # recall = metrics.recall_score(y,preds,average=None,labels=labels)
+# # f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
+# # print(clf)
+# # print("\nOverall Acurracy - SVC: ",accScore,"\n")
+# # for i in range(len(labels)):
+# #     print("Precision of %s class: %f" %(labels[i],precision[i]))
+# #     print("Recall of %s class: %f" %(labels[i],recall[i]))
+# #     print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
+
+# # DecisionTreeClassifier - [6]
+# clf =  DecisionTreeClassifier(random_state=0)
+# preds = model_selection.cross_val_predict(clf, X, y, cv=10)
+# accScore = metrics.accuracy_score(y,preds)
+# labels = [-1, 0, 1]
+# precision = metrics.precision_score(y,preds,average=None,labels=labels)
+# recall = metrics.recall_score(y,preds,average=None,labels=labels)
+# f1Score = metrics.f1_score(y,preds,average=None,labels=labels)
+# print(clf)
+# print("\nOverall Acurracy - DecisionTreeClassifier: ",accScore,"\n")
+# for i in range(len(labels)):
+#     print("Precision of %s class: %f" %(labels[i],precision[i]))
+#     print("Recall of %s class: %f" %(labels[i],recall[i]))
+#     print("F1-Score of %s class: %f" %(labels[i],f1Score[i]),"\n")
 
 # # RandomForestClassifier - [7]
 # clf =   RandomForestClassifier(criterion='entropy', n_jobs = 10)
