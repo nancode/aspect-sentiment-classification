@@ -1,5 +1,5 @@
-## Aspect-sentiment-classification
-# Unaiza Faiz(ufaiz2@uic.edu), Vijaya Nandhini Sivaswamy (vsivas2@uic.edu)
+# Aspect-sentiment-classification
+## Unaiza Faiz(ufaiz2@uic.edu), Vijaya Nandhini Sivaswamy (vsivas2@uic.edu)
 
 Steps to run the code:
 1. Download and unzip the folder
