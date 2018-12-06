@@ -2,7 +2,7 @@ import pandas as pd
 import classmodel as trainmodel
 
 
-file_no = 2
+file_no = 1
 print('Metrics for Test Dataset %s' % file_no)
 dict = trainmodel.model('./data-%s_train.csv' % file_no)
 data = pd.read_csv('./Data-%s_test.csv'% file_no, header=0)
