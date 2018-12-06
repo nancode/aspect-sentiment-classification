@@ -1,9 +1,9 @@
 import pandas as pd
 import classmodel as trainmodel
 
-dict = trainmodel.model('./data-1_train.csv')
+dict = trainmodel.model('./data-2_train.csv')
 
-data = pd.read_csv('./Data-1_test.csv', header=0)
+data = pd.read_csv('./Data-2_test.csv', header=0)
 
 testData = trainmodel.preprocess(data)
 vect = dict['featurevector']
@@ -13,7 +13,7 @@ predictions = classifier.predict(featurevect)
 #print(predictions)
 
 text_id=data['example_id']
-f=open("Unaiza_Faiz_VijayaNandhini_Sivaswamy_Data-1.txt","w")
+f=open("Unaiza_Faiz_VijayaNandhini_Sivaswamy_Data-2.txt","w")
 #newFrame=pd.DataFrame({'example_id':ids,
 for i in range(len(text_id)):
     #print(predictions[i])
