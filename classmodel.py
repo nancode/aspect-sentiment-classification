@@ -34,8 +34,7 @@ def preprocess(data):
 def model(filename):
     ## reading the training data
     colnames = ['example_id', 'text', 'aspect_term', 'term_location', 'classes']
-
-    ## resampling the data    
+   
     data = pd.read_csv(filename, header=0,index_col=['example_id'])
     data_pos=data.loc[data[' class']==1]
     data_neu=data.loc[data[' class']==0]
@@ -44,8 +43,7 @@ def model(filename):
     positive=list(data[' class']).count(1)
     neutral=list(data[' class']).count(0)
     negative=list(data[' class']).count(-1)
-    # print("before resampling")
-    # print(positive,neutral,negative)
+ 
     resampled_zero=resample(data_neu,n_samples=positive-neutral)
     resampled_neg=resample(data_neg,n_samples=positive-negative)
     data=pd.concat([resampled_zero,resampled_neg,data],ignore_index=True,axis=0)
@@ -55,8 +53,6 @@ def model(filename):
     neutral=list(data[' class']).count(0)
     negative=list(data[' class']).count(-1)
     #print("$%$%$%$%$%$%#")
-    # print("after resampling")
-    # print(positive,neutral,negative)
     
     data=shuffle(data)
     data=data.set_index(arange(len(data)))
