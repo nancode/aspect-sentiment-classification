@@ -17,14 +17,14 @@ This project aims at building a supervised learning classification model identif
  
 ## Models Attempted:
 We implemented 8 models using scikit-learn to classify our training set. The models attempted were: 
-1.LinearSVC.
-2.Naive Bayes Classifier.
-3.Multinomial Naive Bayes Classifier
-4.MLP Classifier
-5.SGD Classifier
-6.Adaboost
-7.K-neighbours classifier.
-8.Logistic Regression
+- LinearSVC.
+- Naive Bayes Classifier.
+- Multinomial Naive Bayes Classifier
+- MLP Classifier
+- SGD Classifier
+- Adaboost
+- K-neighbours classifier.
+- Logistic Regression
 
 ## Results
 LinearSVC was considered as the best model with respect to overall accuracy, precision, recall and F-score for the positive and negative classes, and hence used as the classifier on the held-out set.
