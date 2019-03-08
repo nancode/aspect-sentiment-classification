@@ -6,14 +6,14 @@ Our goal was to train and build a model to predict positive, negative and neutra
 This project aims at building a supervised learning classification model identifying the polarity of an aspect term provided for a given statement. We used context window to extract words within the window range of the aspect term i.e 4 words to the left and right of the aspect term. Vectorization is performed using TF-IDF scheme and different models are evaluated based on 10-fold cross validation. 
 
 ## Data pre-processing techniques:
- Replacing punctuations and special characters
- Stop word removal
- Lemmatization
- Tokenization
+-  Replacing punctuations and special characters
+- Stop word removal
+- Lemmatization
+- Tokenization
 
 ## Feature Engineering:
-  Using windowing technique
-  TF-IDF
+ - Using windowing technique
+ - TF-IDF
  
 ## Models Attempted:
 We implemented 8 models using scikit-learn to classify our training set. The models attempted were: 
